@@ -1,0 +1,268 @@
+azureuser@bash:~$ kubectl get nodes
+NAME       STATUS   ROLES           AGE    VERSION
+minikube   Ready    control-plane   175m   v1.33.1
+azureuser@bash:~$ kubectl get pod
+No resources found in default namespace.
+azureuser@bash:~$  kubectl get service
+NAME         TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)   AGE
+kubernetes   ClusterIP   10.96.0.1    <none>        443/TCP   176m
+azureuser@bash:~$ kubectl create deployment nginx-depl --image=nginx
+deployment.apps/nginx-depl created
+azureuser@bash:~$ kubectl get deployment
+NAME         READY   UP-TO-DATE   AVAILABLE   AGE
+nginx-depl   1/1     1            1           37s
+azureuser@bash:~$ kubectl get pod
+NAME                          READY   STATUS    RESTARTS   AGE
+nginx-depl-68c944fcbc-f8bqn   1/1     Running   0          52s
+azureuser@bash:~$ kubectl get replicaset
+NAME                    DESIRED   CURRENT   READY   AGE
+nginx-depl-68c944fcbc   1         1         1       3m34s
+azureuser@bash:~$ kubectl edit deployment nginx-depl
+error: deployments.apps "nginx-depl" is invalid
+A copy of your changes has been stored to "/tmp/kubectl-edit-1146388656.yaml"
+error: Edit cancelled, no valid changes were saved.
+azureuser@bash:~$ kubectl edit deployment nginx-depl
+error: deployments.apps "nginx-depl" is invalid
+A copy of your changes has been stored to "/tmp/kubectl-edit-125104275.yaml"
+error: Edit cancelled, no valid changes were saved.
+azureuser@bash:~$ kubectl edit deployment nginx-depl
+error: deployments.apps "nginx-depl" is invalid
+A copy of your changes has been stored to "/tmp/kubectl-edit-4047180287.yaml"
+error: Edit cancelled, no valid changes were saved.
+azureuser@bash:~$ kubectl edit deployment nginx-depl
+error: deployments.apps "nginx-depl" is invalid
+A copy of your changes has been stored to "/tmp/kubectl-edit-2850169121.yaml"
+error: Edit cancelled, no valid changes were saved.
+azureuser@bash:~$
+
+azureuser@bash:~$ kubectl edit deployment nginx-depl
+Edit cancelled, no changes made.
+azureuser@bash:~$ kubectl edit deployment nginx-depl
+Edit cancelled, no changes made.
+azureuser@bash:~$ kubectl edit deployment nginx-depl
+deployment.apps/nginx-depl edited
+azureuser@bash:~$ kubectl get deployment
+NAME         READY   UP-TO-DATE   AVAILABLE   AGE
+nginx-depl   1/1     1            1           67m
+azureuser@bash:~$ kubectl get pod
+NAME                         READY   STATUS    RESTARTS   AGE
+nginx-depl-54bd6589c-lfr47   1/1     Running   0          56s
+azureuser@bash:~$ kubectl get replicaset
+NAME                    DESIRED   CURRENT   READY   AGE
+nginx-depl-54bd6589c    1         1         1       2m3s
+nginx-depl-68c944fcbc   0         0         0       68m
+azureuser@bash:~$ ^C
+azureuser@bash:~$ kubectl logs nginx-depl-54bd6589c
+error: error from server (NotFound): pods "nginx-depl-54bd6589c" not found in namespace "default"
+azureuser@bash:~$ ^C
+azureuser@bash:~$ kubectl logs nginx-depl-68c944fcbc
+error: error from server (NotFound): pods "nginx-depl-68c944fcbc" not found in namespace "default"
+azureuser@bash:~$ kubectl create deployment mongo-depl --image=mongo
+deployment.apps/mongo-depl created
+azureuser@bash:~$ kubectl get pods
+NAME                          READY   STATUS              RESTARTS   AGE
+mongo-depl-85ffbc9879-dpgk4   0/1     ContainerCreating   0          8s
+nginx-depl-54bd6589c-lfr47    1/1     Running             0          7m29s
+azureuser@bash:~$ kubectl get pods
+NAME                          READY   STATUS              RESTARTS   AGE
+mongo-depl-85ffbc9879-dpgk4   0/1     ContainerCreating   0          12s
+nginx-depl-54bd6589c-lfr47    1/1     Running             0          7m33s
+azureuser@bash:~$ kubectl get pods
+NAME                          READY   STATUS              RESTARTS   AGE
+mongo-depl-85ffbc9879-dpgk4   0/1     ContainerCreating   0          13s
+nginx-depl-54bd6589c-lfr47    1/1     Running             0          7m34s
+azureuser@bash:~$ kubectl get pods
+NAME                          READY   STATUS              RESTARTS   AGE
+mongo-depl-85ffbc9879-dpgk4   0/1     ContainerCreating   0          25s
+nginx-depl-54bd6589c-lfr47    1/1     Running             0          7m46s
+azureuser@bash:~$ kubectl get pods
+NAME                          READY   STATUS    RESTARTS   AGE
+mongo-depl-85ffbc9879-dpgk4   1/1     Running   0          115s
+nginx-depl-54bd6589c-lfr47    1/1     Running   0          9m16s
+azureuser@bash:~$ kubectl logs nginx-depl-68c944fcbc^C
+azureuser@bash:~$ kubectl logs mongo-depl-85ffbc9879-dpgk4
+{"t":{"$date":"2025-09-03T17:04:42.981+00:00"},"s":"I",  "c":"CONTROL",  "id":23285,   "ctx":"main","msg":"Automatically disabling TLS 1.0, to force-enable TLS 1.0 specify --sslDisabledProtocols 'none'"}
+{"t":{"$date":"2025-09-03T17:04:42.984+00:00"},"s":"I",  "c":"CONTROL",  "id":5945603, "ctx":"main","msg":"Multi threading initialized"}
+{"t":{"$date":"2025-09-03T17:04:42.985+00:00"},"s":"I",  "c":"NETWORK",  "id":4648601, "ctx":"main","msg":"Implicit TCP FastOpen unavailable. If TCP FastOpen is required, set at least one of the related parameters","attr":{"relatedParameters":["tcpFastOpenServer","tcpFastOpenClient","tcpFastOpenQueueSize"]}}
+{"t":{"$date":"2025-09-03T17:04:42.986+00:00"},"s":"I",  "c":"NETWORK",  "id":4915701, "ctx":"main","msg":"Initialized wire specification","attr":{"spec":{"incomingExternalClient":{"minWireVersion":0,"maxWireVersion":25},"incomingInternalClient":{"minWireVersion":0,"maxWireVersion":25},"outgoing":{"minWireVersion":6,"maxWireVersion":25},"isInternalClient":true}}}
+{"t":{"$date":"2025-09-03T17:04:42.986+00:00"},"s":"I",  "c":"TENANT_M", "id":7091600, "ctx":"main","msg":"Starting TenantMigrationAccessBlockerRegistry"}
+{"t":{"$date":"2025-09-03T17:04:42.987+00:00"},"s":"I",  "c":"CONTROL",  "id":4615611, "ctx":"initandlisten","msg":"MongoDB starting","attr":{"pid":1,"port":27017,"dbPath":"/data/db","architecture":"64-bit","host":"mongo-depl-85ffbc9879-dpgk4"}}
+{"t":{"$date":"2025-09-03T17:04:42.987+00:00"},"s":"I",  "c":"CONTROL",  "id":23403,   "ctx":"initandlisten","msg":"Build Info","attr":{"buildInfo":{"version":"8.0.13","gitVersion":"8dc5cd2a30c4524132e2d44bb314544dc477e611","openSSLVersion":"OpenSSL 3.0.13 30 Jan 2024","modules":[],"allocator":"tcmalloc-google","environment":{"distmod":"ubuntu2404","distarch":"x86_64","target_arch":"x86_64"}}}}
+{"t":{"$date":"2025-09-03T17:04:42.987+00:00"},"s":"I",  "c":"CONTROL",  "id":51765,   "ctx":"initandlisten","msg":"Operating System","attr":{"os":{"name":"Ubuntu","version":"24.04"}}}
+{"t":{"$date":"2025-09-03T17:04:42.987+00:00"},"s":"I",  "c":"CONTROL",  "id":21951,   "ctx":"initandlisten","msg":"Options set by command line","attr":{"options":{"net":{"bindIp":"*"}}}}
+{"t":{"$date":"2025-09-03T17:04:42.996+00:00"},"s":"I",  "c":"STORAGE",  "id":22297,   "ctx":"initandlisten","msg":"Using the XFS filesystem is strongly recommended with the WiredTiger storage engine. See http://dochub.mongodb.org/core/prodnotes-filesystem","tags":["startupWarnings"]}
+{"t":{"$date":"2025-09-03T17:04:42.996+00:00"},"s":"I",  "c":"STORAGE",  "id":22315,   "ctx":"initandlisten","msg":"Opening WiredTiger","attr":{"config":"create,cache_size=3434M,session_max=33000,eviction=(threads_min=4,threads_max=4),config_base=false,statistics=(fast),log=(enabled=true,remove=true,path=journal,compressor=snappy),builtin_extension_config=(zstd=(compression_level=6)),file_manager=(close_idle_time=600,close_scan_interval=10,close_handle_minimum=2000),statistics_log=(wait=0),json_output=(error,message),verbose=[recovery_progress:1,checkpoint_progress:1,compact_progress:1,backup:0,checkpoint:0,compact:0,evict:0,history_store:0,recovery:0,rts:0,salvage:0,tiered:0,timestamp:0,transaction:0,verify:0,log:0],prefetch=(available=true,default=false),"}}
+{"t":{"$date":"2025-09-03T17:04:43.633+00:00"},"s":"I",  "c":"WTRECOV",  "id":22430,   "ctx":"initandlisten","msg":"WiredTiger message","attr":{"message":{"ts_sec":1756919083,"ts_usec":633421,"thread":"1:0x702ea42ea240","session_name":"txn-recover","category":"WT_VERB_RECOVERY_PROGRESS","category_id":34,"verbose_level":"DEBUG_1","verbose_level_id":1,"msg":"recovery log replay has successfully finished and ran for 0 milliseconds"}}}
+{"t":{"$date":"2025-09-03T17:04:43.633+00:00"},"s":"I",  "c":"WTRECOV",  "id":22430,   "ctx":"initandlisten","msg":"WiredTiger message","attr":{"message":{"ts_sec":1756919083,"ts_usec":633531,"thread":"1:0x702ea42ea240","session_name":"txn-recover","category":"WT_VERB_RECOVERY_PROGRESS","category_id":34,"verbose_level":"DEBUG_1","verbose_level_id":1,"msg":"Set global recovery timestamp: (0, 0)"}}}
+{"t":{"$date":"2025-09-03T17:04:43.633+00:00"},"s":"I",  "c":"WTRECOV",  "id":22430,   "ctx":"initandlisten","msg":"WiredTiger message","attr":{"message":{"ts_sec":1756919083,"ts_usec":633559,"thread":"1:0x702ea42ea240","session_name":"txn-recover","category":"WT_VERB_RECOVERY_PROGRESS","category_id":34,"verbose_level":"DEBUG_1","verbose_level_id":1,"msg":"Set global oldest timestamp: (0, 0)"}}}
+{"t":{"$date":"2025-09-03T17:04:43.633+00:00"},"s":"I",  "c":"WTRECOV",  "id":22430,   "ctx":"initandlisten","msg":"WiredTiger message","attr":{"message":{"ts_sec":1756919083,"ts_usec":633599,"thread":"1:0x702ea42ea240","session_name":"txn-recover","category":"WT_VERB_RECOVERY_PROGRESS","category_id":34,"verbose_level":"DEBUG_1","verbose_level_id":1,"msg":"recovery was completed successfully and took 0ms, including 0ms for the log replay, 0ms for the rollback to stable, and 0ms for the checkpoint."}}}
+{"t":{"$date":"2025-09-03T17:04:43.673+00:00"},"s":"I",  "c":"STORAGE",  "id":4795906, "ctx":"initandlisten","msg":"WiredTiger opened","attr":{"durationMillis":676}}
+{"t":{"$date":"2025-09-03T17:04:43.673+00:00"},"s":"I",  "c":"RECOVERY", "id":23987,   "ctx":"initandlisten","msg":"WiredTiger recoveryTimestamp","attr":{"recoveryTimestamp":{"$timestamp":{"t":0,"i":0}}}}
+{"t":{"$date":"2025-09-03T17:04:43.778+00:00"},"s":"I",  "c":"STORAGE",  "id":9529901, "ctx":"initandlisten","msg":"Initializing durable catalog","attr":{"numRecords":0}}
+{"t":{"$date":"2025-09-03T17:04:43.778+00:00"},"s":"I",  "c":"STORAGE",  "id":9529902, "ctx":"initandlisten","msg":"Retrieving all idents from storage engine"}
+{"t":{"$date":"2025-09-03T17:04:43.778+00:00"},"s":"I",  "c":"STORAGE",  "id":9529903, "ctx":"initandlisten","msg":"Initializing all collections in durable catalog","attr":{"numEntries":0}}
+{"t":{"$date":"2025-09-03T17:04:43.808+00:00"},"s":"W",  "c":"CONTROL",  "id":22120,   "ctx":"initandlisten","msg":"Access control is not enabled for the database. Read and write access to data and configuration is unrestricted","tags":["startupWarnings"]}
+{"t":{"$date":"2025-09-03T17:04:43.809+00:00"},"s":"W",  "c":"CONTROL",  "id":9068900, "ctx":"initandlisten","msg":"For customers running the current memory allocator, we suggest changing the contents of the following sysfsFile","attr":{"allocator":"tcmalloc-google","sysfsFile":"/sys/kernel/mm/transparent_hugepage/defrag","currentValue":"madvise","desiredValue":"defer+madvise"},"tags":["startupWarnings"]}
+{"t":{"$date":"2025-09-03T17:04:43.809+00:00"},"s":"W",  "c":"CONTROL",  "id":8640302, "ctx":"initandlisten","msg":"We suggest setting the contents of sysfsFile to 0.","attr":{"sysfsFile":"/sys/kernel/mm/transparent_hugepage/khugepaged/max_ptes_none","currentValue":511},"tags":["startupWarnings"]}
+{"t":{"$date":"2025-09-03T17:04:43.809+00:00"},"s":"W",  "c":"NETWORK",  "id":5123300, "ctx":"initandlisten","msg":"vm.max_map_count is too low","attr":{"currentValue":1048576,"recommendedMinimum":1677720,"maxConns":838860},"tags":["startupWarnings"]}
+{"t":{"$date":"2025-09-03T17:04:43.809+00:00"},"s":"I",  "c":"STORAGE",  "id":20320,   "ctx":"initandlisten","msg":"createCollection","attr":{"namespace":"admin.system.version","uuidDisposition":"provided","uuid":{"uuid":{"$uuid":"6bb920ce-ceca-4d05-a632-d885a22c0e64"}},"options":{"uuid":{"$uuid":"6bb920ce-ceca-4d05-a632-d885a22c0e64"}}}}
+{"t":{"$date":"2025-09-03T17:04:43.867+00:00"},"s":"I",  "c":"INDEX",    "id":20345,   "ctx":"initandlisten","msg":"Index build: done building","attr":{"buildUUID":null,"collectionUUID":{"uuid":{"$uuid":"6bb920ce-ceca-4d05-a632-d885a22c0e64"}},"namespace":"admin.system.version","index":"_id_","ident":"index-1-14054327035062939380","collectionIdent":"collection-0-14054327035062939380","commitTimestamp":null}}
+{"t":{"$date":"2025-09-03T17:04:43.868+00:00"},"s":"I",  "c":"REPL",     "id":20459,   "ctx":"initandlisten","msg":"Setting featureCompatibilityVersion","attr":{"newVersion":"8.0"}}
+{"t":{"$date":"2025-09-03T17:04:43.868+00:00"},"s":"I",  "c":"REPL",     "id":5853300, "ctx":"initandlisten","msg":"current featureCompatibilityVersion value","attr":{"featureCompatibilityVersion":"8.0","context":"setFCV"}}
+{"t":{"$date":"2025-09-03T17:04:43.868+00:00"},"s":"I",  "c":"NETWORK",  "id":4915702, "ctx":"initandlisten","msg":"Updated wire specification","attr":{"oldSpec":{"incomingExternalClient":{"minWireVersion":0,"maxWireVersion":25},"incomingInternalClient":{"minWireVersion":0,"maxWireVersion":25},"outgoing":{"minWireVersion":6,"maxWireVersion":25},"isInternalClient":true},"newSpec":{"incomingExternalClient":{"minWireVersion":0,"maxWireVersion":25},"incomingInternalClient":{"minWireVersion":25,"maxWireVersion":25},"outgoing":{"minWireVersion":25,"maxWireVersion":25},"isInternalClient":true}}}
+{"t":{"$date":"2025-09-03T17:04:43.868+00:00"},"s":"I",  "c":"NETWORK",  "id":4915702, "ctx":"initandlisten","msg":"Updated wire specification","attr":{"oldSpec":{"incomingExternalClient":{"minWireVersion":0,"maxWireVersion":25},"incomingInternalClient":{"minWireVersion":25,"maxWireVersion":25},"outgoing":{"minWireVersion":25,"maxWireVersion":25},"isInternalClient":true},"newSpec":{"incomingExternalClient":{"minWireVersion":0,"maxWireVersion":25},"incomingInternalClient":{"minWireVersion":25,"maxWireVersion":25},"outgoing":{"minWireVersion":25,"maxWireVersion":25},"isInternalClient":true}}}
+{"t":{"$date":"2025-09-03T17:04:43.868+00:00"},"s":"I",  "c":"REPL",     "id":5853300, "ctx":"initandlisten","msg":"current featureCompatibilityVersion value","attr":{"featureCompatibilityVersion":"8.0","context":"startup"}}
+{"t":{"$date":"2025-09-03T17:04:43.868+00:00"},"s":"I",  "c":"STORAGE",  "id":5071100, "ctx":"initandlisten","msg":"Clearing temp directory"}
+{"t":{"$date":"2025-09-03T17:04:43.868+00:00"},"s":"I",  "c":"CONTROL",  "id":6608200, "ctx":"initandlisten","msg":"Initializing cluster server parameters from disk"}
+{"t":{"$date":"2025-09-03T17:04:43.868+00:00"},"s":"I",  "c":"CONTROL",  "id":20536,   "ctx":"initandlisten","msg":"Flow Control is enabled on this deployment"}
+{"t":{"$date":"2025-09-03T17:04:43.868+00:00"},"s":"I",  "c":"FTDC",     "id":20625,   "ctx":"initandlisten","msg":"Initializing full-time diagnostic data capture","attr":{"dataDirectory":"/data/db/diagnostic.data"}}
+{"t":{"$date":"2025-09-03T17:04:43.870+00:00"},"s":"I",  "c":"STORAGE",  "id":20320,   "ctx":"initandlisten","msg":"createCollection","attr":{"namespace":"local.startup_log","uuidDisposition":"generated","uuid":{"uuid":{"$uuid":"7db485c1-c857-4410-8f18-cad6fb7a8943"}},"options":{"capped":true,"size":10485760}}}
+{"t":{"$date":"2025-09-03T17:04:43.930+00:00"},"s":"I",  "c":"INDEX",    "id":20345,   "ctx":"initandlisten","msg":"Index build: done building","attr":{"buildUUID":null,"collectionUUID":{"uuid":{"$uuid":"7db485c1-c857-4410-8f18-cad6fb7a8943"}},"namespace":"local.startup_log","index":"_id_","ident":"index-3-14054327035062939380","collectionIdent":"collection-2-14054327035062939380","commitTimestamp":null}}
+{"t":{"$date":"2025-09-03T17:04:43.930+00:00"},"s":"I",  "c":"REPL",     "id":6015317, "ctx":"initandlisten","msg":"Setting new configuration state","attr":{"newState":"ConfigReplicationDisabled","oldState":"ConfigPreStart"}}
+{"t":{"$date":"2025-09-03T17:04:43.930+00:00"},"s":"I",  "c":"STORAGE",  "id":22262,   "ctx":"initandlisten","msg":"Timestamp monitor starting"}
+{"t":{"$date":"2025-09-03T17:04:43.930+00:00"},"s":"I",  "c":"STORAGE",  "id":7333401, "ctx":"initandlisten","msg":"Starting the DiskSpaceMonitor"}
+{"t":{"$date":"2025-09-03T17:04:43.931+00:00"},"s":"I",  "c":"NETWORK",  "id":23015,   "ctx":"listener","msg":"Listening on","attr":{"address":"/tmp/mongodb-27017.sock"}}
+{"t":{"$date":"2025-09-03T17:04:43.931+00:00"},"s":"I",  "c":"NETWORK",  "id":23015,   "ctx":"listener","msg":"Listening on","attr":{"address":"0.0.0.0:27017"}}
+{"t":{"$date":"2025-09-03T17:04:43.931+00:00"},"s":"I",  "c":"NETWORK",  "id":23016,   "ctx":"listener","msg":"Waiting for connections","attr":{"port":27017,"ssl":"off"}}
+{"t":{"$date":"2025-09-03T17:04:43.931+00:00"},"s":"I",  "c":"CONTROL",  "id":8423403, "ctx":"initandlisten","msg":"mongod startup complete","attr":{"Summary of time elapsed":{"Startup from clean shutdown?":true,"Statistics":{"Set up periodic runner":"0 ms","Set up online certificate status protocol manager":"0 ms","Transport layer setup":"0 ms","Run initial syncer crash recovery":"0 ms","Create storage engine lock file in the data directory":"0 ms","Get metadata describing storage engine":"0 ms","Create storage engine":"782 ms","Write current PID to file":"10 ms","Write a new metadata for storage engine":"20 ms","Initialize FCV before rebuilding indexes":"0 ms","Drop abandoned idents and get back indexes that need to be rebuilt or builds that need to be restarted":"0 ms","Rebuild indexes for collections":"0 ms","Load cluster parameters from disk for a standalone":"0 ms","Build user and roles graph":"0 ms","Set up the background thread pool responsible for waiting for opTimes to be majority committed":"0 ms","Start up the replication coordinator":"0 ms","Ensure the change stream collections on startup contain consistent data":"0 ms","Write startup options to the audit log":"0 ms","Start transport layer":"0 ms","_initAndListen total elapsed time":"944 ms"}}}}
+{"t":{"$date":"2025-09-03T17:04:43.933+00:00"},"s":"I",  "c":"STORAGE",  "id":20320,   "ctx":"LogicalSessionCacheRefresh","msg":"createCollection","attr":{"namespace":"config.system.sessions","uuidDisposition":"generated","uuid":{"uuid":{"$uuid":"edc81960-c674-48ef-86e4-ca18d3ef3f9b"}},"options":{}}}
+{"t":{"$date":"2025-09-03T17:04:43.933+00:00"},"s":"I",  "c":"CONTROL",  "id":20712,   "ctx":"LogicalSessionCacheReap","msg":"Sessions collection is not set up; waiting until next sessions reap interval","attr":{"error":"NamespaceNotFound: config.system.sessions does not exist"}}
+{"t":{"$date":"2025-09-03T17:04:44.005+00:00"},"s":"W",  "c":"CONTROL",  "id":636300,  "ctx":"ftdc","msg":"Use of deprecated server parameter name","attr":{"deprecatedName":"internalQueryCacheSize","canonicalName":"internalQueryCacheMaxEntriesPerCollection"}}
+{"t":{"$date":"2025-09-03T17:04:44.005+00:00"},"s":"W",  "c":"CONTROL",  "id":636300,  "ctx":"ftdc","msg":"Use of deprecated server parameter name","attr":{"deprecatedName":"oplogSamplingLogIntervalSeconds","canonicalName":"collectionSamplingLogIntervalSeconds"}}
+{"t":{"$date":"2025-09-03T17:04:44.005+00:00"},"s":"W",  "c":"NETWORK",  "id":23803,   "ctx":"ftdc","msg":"Use of deprecated server parameter 'sslMode', please use 'tlsMode' instead."}
+{"t":{"$date":"2025-09-03T17:04:44.005+00:00"},"s":"W",  "c":"CONTROL",  "id":636300,  "ctx":"ftdc","msg":"Use of deprecated server parameter name","attr":{"deprecatedName":"wiredTigerConcurrentReadTransactions","canonicalName":"storageEngineConcurrentReadTransactions"}}
+{"t":{"$date":"2025-09-03T17:04:44.005+00:00"},"s":"W",  "c":"CONTROL",  "id":636300,  "ctx":"ftdc","msg":"Use of deprecated server parameter name","attr":{"deprecatedName":"wiredTigerConcurrentWriteTransactions","canonicalName":"storageEngineConcurrentWriteTransactions"}}
+{"t":{"$date":"2025-09-03T17:04:44.033+00:00"},"s":"I",  "c":"INDEX",    "id":20345,   "ctx":"LogicalSessionCacheRefresh","msg":"Index build: done building","attr":{"buildUUID":null,"collectionUUID":{"uuid":{"$uuid":"edc81960-c674-48ef-86e4-ca18d3ef3f9b"}},"namespace":"config.system.sessions","index":"_id_","ident":"index-5-14054327035062939380","collectionIdent":"collection-4-14054327035062939380","commitTimestamp":null}}
+{"t":{"$date":"2025-09-03T17:04:44.033+00:00"},"s":"I",  "c":"INDEX",    "id":20345,   "ctx":"LogicalSessionCacheRefresh","msg":"Index build: done building","attr":{"buildUUID":null,"collectionUUID":{"uuid":{"$uuid":"edc81960-c674-48ef-86e4-ca18d3ef3f9b"}},"namespace":"config.system.sessions","index":"lsidTTLIndex","ident":"index-6-14054327035062939380","collectionIdent":"collection-4-14054327035062939380","commitTimestamp":null}}
+{"t":{"$date":"2025-09-03T17:04:44.033+00:00"},"s":"I",  "c":"COMMAND",  "id":51803,   "ctx":"LogicalSessionCacheRefresh","msg":"Slow query","attr":{"type":"command","isFromUserConnection":false,"ns":"config.system.sessions","collectionType":"system","command":{"createIndexes":"system.sessions","v":2,"indexes":[{"key":{"lastUse":1},"name":"lsidTTLIndex","expireAfterSeconds":1800}],"ignoreUnknownIndexOptions":false,"writeConcern":{},"$db":"config"},"numYields":0,"reslen":114,"locks":{"ReplicationStateTransition":{"acquireCount":{"w":2}},"Global":{"acquireCount":{"r":1,"w":2}},"Database":{"acquireCount":{"w":2}},"Collection":{"acquireCount":{"w":2}},"Mutex":{"acquireCount":{"r":2}}},"flowControl":{"acquireCount":1},"storage":{"data":{"txnBytesDirty":2489}},"cpuNanos":6756439,"protocol":"op_msg","queues":{"ingress":{"admissions":2},"execution":{"admissions":3}},"workingMillis":100,"durationMillis":100}}
+{"t":{"$date":"2025-09-03T17:05:43.810+00:00"},"s":"I",  "c":"WTCHKPT",  "id":22430,   "ctx":"Checkpointer","msg":"WiredTiger message","attr":{"message":{"ts_sec":1756919143,"ts_usec":810290,"thread":"1:0x702e95aab6c0","session_name":"WT_SESSION.checkpoint","category":"WT_VERB_CHECKPOINT_PROGRESS","category_id":7,"verbose_level":"DEBUG_1","verbose_level_id":1,"msg":"saving checkpoint snapshot min: 34, snapshot max: 34 snapshot count: 0, oldest timestamp: (0, 0) , meta checkpoint timestamp: (0, 0) base write gen: 1"}}}
+azureuser@bash:~$ kubectl describe pod mongo-depl-85ffbc9879-dpgk4
+Name:             mongo-depl-85ffbc9879-dpgk4
+Namespace:        default
+Priority:         0
+Service Account:  default
+Node:             minikube/192.168.49.2
+Start Time:       Wed, 03 Sep 2025 17:04:12 +0000
+Labels:           app=mongo-depl
+                  pod-template-hash=85ffbc9879
+Annotations:      <none>
+Status:           Running
+IP:               10.244.0.6
+IPs:
+  IP:           10.244.0.6
+Controlled By:  ReplicaSet/mongo-depl-85ffbc9879
+Containers:
+  mongo:
+    Container ID:   docker://4701481623db8e6aa7b0eb38a2bd6d84c2dfe9bfb7b319c358c4b71664c9199a
+    Image:          mongo
+    Image ID:       docker-pullable://mongo@sha256:f4a9789ae2c2712c3350ccc92d15c5ffc11217e02228dcd2f68991f25bea7b7c
+    Port:           <none>
+    Host Port:      <none>
+    State:          Running
+      Started:      Wed, 03 Sep 2025 17:04:42 +0000
+    Ready:          True
+    Restart Count:  0
+    Environment:    <none>
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-k576v (ro)
+Conditions:
+  Type                        Status
+  PodReadyToStartContainers   True
+  Initialized                 True
+  Ready                       True
+  ContainersReady             True
+  PodScheduled                True
+Volumes:
+  kube-api-access-k576v:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    Optional:                false
+    DownwardAPI:             true
+QoS Class:                   BestEffort
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type    Reason     Age    From               Message
+  ----    ------     ----   ----               -------
+  Normal  Scheduled  2m38s  default-scheduler  Successfully assigned default/mongo-depl-85ffbc9879-dpgk4 to minikube
+  Normal  Pulling    2m38s  kubelet            Pulling image "mongo"
+  Normal  Pulled     2m8s   kubelet            Successfully pulled image "mongo" in 29.648s (29.648s including waiting). Image size: 909230106 bytes.
+  Normal  Created    2m8s   kubelet            Created container: mongo
+  Normal  Started    2m8s   kubelet            Started container mongo
+azureuser@bash:~$ kubectl exec -it mongo-depl-85ffbc9879-dpgk4 -- bin/bash
+root@mongo-depl-85ffbc9879-dpgk4:/# ls
+bin  boot  data  dev  docker-entrypoint-initdb.d  etc  home  js-yaml.js  lib  lib64  media  mnt  opt  proc  root  run  sbin  srv  sys  tmp  usr  var
+root@mongo-depl-85ffbc9879-dpgk4:/# exit
+exit
+azureuser@bash:~$ kubectl get pod
+NAME                          READY   STATUS    RESTARTS   AGE
+mongo-depl-85ffbc9879-dpgk4   1/1     Running   0          7m21s
+nginx-depl-54bd6589c-lfr47    1/1     Running   0          14m
+azureuser@bash:~$ ^C
+azureuser@bash:~$ kubectl delete deployment mongo-depl
+deployment.apps "mongo-depl" deleted from default namespace
+azureuser@bash:~$ kubectl get pod
+NAME                         READY   STATUS    RESTARTS   AGE
+nginx-depl-54bd6589c-lfr47   1/1     Running   0          15m
+azureuser@bash:~$ kubectl get replicaset
+NAME                    DESIRED   CURRENT   READY   AGE
+nginx-depl-54bd6589c    1         1         1       15m
+nginx-depl-68c944fcbc   0         0         0       81m
+azureuser@bash:~$ kubectl delete deployment nginx-depl
+deployment.apps "nginx-depl" deleted from default namespace
+azureuser@bash:~$ kubectl get replicaset
+No resources found in default namespace.
+azureuser@bash:~$ kubectl get pod
+No resources found in default namespace.
+azureuser@bash:~$ vi nginx-deployment.yaml
+azureuser@bash:~$ kubectl apply -f nginx-deployment.yaml
+deployment.apps/nginx-deployment created
+azureuser@bash:~$ kubectl get deployment
+NAME               READY   UP-TO-DATE   AVAILABLE   AGE
+nginx-deployment   1/1     1            1           11s
+azureuser@bash:~$ kubectl get pod
+NAME                                READY   STATUS    RESTARTS   AGE
+nginx-deployment-7f65fcf556-crrrt   1/1     Running   0          18s
+azureuser@bash:~$ kubectl get service
+NAME         TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)   AGE
+kubernetes   ClusterIP   10.96.0.1    <none>        443/TCP   4h30m
+azureuser@bash:~$ kubectl get replicaset
+NAME                          DESIRED   CURRENT   READY   AGE
+nginx-deployment-7f65fcf556   1         1         1       40s
+azureuser@bash:~$ vi nginx-deployment.yaml
+azureuser@bash:~$ kubectl apply -f nginx-deployment.yaml
+deployment.apps/nginx-deployment configured
+azureuser@bash:~$ kubectl get service
+NAME         TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)   AGE
+kubernetes   ClusterIP   10.96.0.1    <none>        443/TCP   4h34m
+azureuser@bash:~$ kubectl get pod
+NAME                                READY   STATUS    RESTARTS   AGE
+nginx-deployment-7f65fcf556-877g2   1/1     Running   0          13s
+nginx-deployment-7f65fcf556-crrrt   1/1     Running   0          4m7s
+azureuser@bash:~$ cat nginx-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  labels:
+    apps: nginx
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.16
+        ports:
+        - containerPort: 80
+
+azureuser@bash:~$
+
