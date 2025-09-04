@@ -266,3 +266,117 @@ spec:
 
 azureuser@bash:~$
 
+azureuser@bash:~$ ls
+kubectl.sha256  minikube_latest_amd64.deb  nginx-deployment.yaml  nginx-deployment1.yaml  nginx-service.yaml
+azureuser@bash:~$ kubectl nginx.service.yaml
+error: unknown command "nginx.service.yaml" for "kubectl"
+azureuser@bash:~$ kubectl apply -f nginx.service.yaml
+error: the path "nginx.service.yaml" does not exist
+azureuser@bash:~$ kubectl apply -f nginx-service.yaml
+The Service "nginx-Service" is invalid: metadata.name: Invalid value: "nginx-Service": a DNS-1035 label must consist of lower case alphanumeric characters or '-', start with an alphabetic character, and end with an alphanumeric character (e.g. 'my-name',  or 'abc-123', regex used for validation is '[a-z]([-a-z0-9]*[a-z0-9])?')
+azureuser@bash:~$ vi nginx-service.yaml
+azureuser@bash:~$ kubectl apply -f nginx-service.yaml
+service/nginx-service created
+azureuser@bash:~$ lubectl get service
+Command 'lubectl' not found, did you mean:
+  command 'kubectl' from snap kubectl (1.33.4)
+See 'snap info <snapname>' for additional versions.
+azureuser@bash:~$ kubectl get service
+NAME            TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)   AGE
+kubernetes      ClusterIP   10.96.0.1        <none>        443/TCP   18h
+nginx-service   ClusterIP   10.105.196.245   <none>        80/TCP    13s
+azureuser@bash:~$ kubectl describe service nginx-service
+Name:                     nginx-service
+Namespace:                default
+Labels:                   <none>
+Annotations:              <none>
+Selector:                 app=nginx
+Type:                     ClusterIP
+IP Family Policy:         SingleStack
+IP Families:              IPv4
+IP:                       10.105.196.245
+IPs:                      10.105.196.245
+Port:                     <unset>  80/TCP
+TargetPort:               8080/TCP
+Endpoints:                10.244.0.13:8080,10.244.0.12:8080
+Session Affinity:         None
+Internal Traffic Policy:  Cluster
+Events:                   <none>
+azureuser@bash:~$ kubectl get pod -o wide
+NAME                                READY   STATUS    RESTARTS   AGE     IP            NODE       NOMINATED NODE   READINESS GATES
+nginx-deployment-687d5fb844-7fhn9   1/1     Running   0          5m34s   10.244.0.12   minikube   <none>           <none>
+nginx-deployment-687d5fb844-hs89v   1/1     Running   0          5m31s   10.244.0.13   minikube   <none>           <none>
+azureuser@bash:~$ kubectl get deployment nginx-deployment -o yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    deployment.kubernetes.io/revision: "2"
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"apps/v1","kind":"Deployment","metadata":{"annotations":{},"labels":{"app":"nginx"},"name":"nginx-deployment","namespace":"default"},"spec":{"replicas":2,"selector":{"matchLabels":{"app":"nginx"}},"template":{"metadata":{"labels":{"app":"nginx"}},"spec":{"containers":[{"image":"nginx:1.16","name":"nginx","ports":[{"containerPort":8080}]}]}}}}
+  creationTimestamp: "2025-09-03T17:21:03Z"
+  generation: 3
+  labels:
+    app: nginx
+  name: nginx-deployment
+  namespace: default
+  resourceVersion: "14243"
+  uid: be930f89-93c5-4041-8b58-04883e4a326e
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 2
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: nginx
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - image: nginx:1.16
+        imagePullPolicy: IfNotPresent
+        name: nginx
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+status:
+  availableReplicas: 2
+  conditions:
+  - lastTransitionTime: "2025-09-04T07:36:15Z"
+    lastUpdateTime: "2025-09-04T07:36:15Z"
+    message: Deployment has minimum availability.
+    reason: MinimumReplicasAvailable
+    status: "True"
+    type: Available
+  - lastTransitionTime: "2025-09-03T17:21:03Z"
+    lastUpdateTime: "2025-09-04T07:39:07Z"
+    message: ReplicaSet "nginx-deployment-687d5fb844" has successfully progressed.
+    reason: NewReplicaSetAvailable
+    status: "True"
+    type: Progressing
+  observedGeneration: 3
+  readyReplicas: 2
+  replicas: 2
+  updatedReplicas: 2
+azureuser@bash:~$ kubectl delete -f nginx-deployment1.yaml
+deployment.apps "nginx-deployment" deleted from default namespace
+azureuser@bash:~$ kubectl delete -f nginx-service.yaml
+service "nginx-service" deleted from default namespace
+azureuser@bash:~$
+
