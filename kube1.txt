@@ -564,4 +564,26 @@ You may select another namespace by using 'minikube service mongo-express-servic
 
 azureuser@bash:~$ minikube service mongo-express-service
 
+azureuser@bash:~$ kubectl get namespace
+NAME              STATUS   AGE
+default           Active   23h
+kube-node-lease   Active   23h
+kube-public       Active   23h
+kube-system       Active   23h
+azureuser@bash:~$ kubectl cluster-info
+Kubernetes control plane is running at https://192.168.49.2:8443
+CoreDNS is running at https://192.168.49.2:8443/api/v1/namespaces/kube-system/se                                                                                                             rvices/kube-dns:dns/proxy
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+azureuser@bash:~$ kubectl create namespace my-namespace
+namespace/my-namespace created
+azureuser@bash:~$ kubectl get namespace
+NAME              STATUS   AGE
+default           Active   23h
+kube-node-lease   Active   23h
+kube-public       Active   23h
+kube-system       Active   23h
+my-namespace      Active   10s
+azureuser@bash:~$
+
 
