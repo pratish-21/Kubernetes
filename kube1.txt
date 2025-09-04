@@ -380,3 +380,188 @@ azureuser@bash:~$ kubectl delete -f nginx-service.yaml
 service "nginx-service" deleted from default namespace
 azureuser@bash:~$
 
+
+azureuser@bash:~$ vi secret.yaml
+azureuser@bash:~$ kubectl apply -f secret.yaml
+error: resource mapping not found for name: "mongodb-secret" namespace: "" from "secret.yaml": no matches for kind "Sercret" in version "v1"
+ensure CRDs are installed first
+azureuser@bash:~$ cat sceret.yaml
+cat: sceret.yaml: No such file or directory
+azureuser@bash:~$ cat secret.yaml
+apiVersion: v1
+kind: Sercret
+metadata:
+  name: mongodb-secret
+type: Opaque
+data:
+  mongo-root-username: dXNlcm5hbWU=
+  mongo-root-passowrd: cGFzc3dvcmQ=
+azureuser@bash:~$ vi secret.yaml
+azureuser@bash:~$ kubectl apply -f secret.yaml
+secret/mongodb-secret created
+azureuser@bash:~$ kubectl get secret
+NAME             TYPE     DATA   AGE
+mongodb-secret   Opaque   2      34s
+azureuser@bash:~$ vi mongo.yaml
+azureuser@bash:~$ kubectl apply -f mongo.yaml
+Error from server (BadRequest): error when creating "mongo.yaml": Deployment in version "v1" cannot be handled as a Deployment: strict decoding error: unknown field "spec.template.spec.containers[0].env[0].valueFROM", unknown field "spec.template.spec.containers[0].env[1].valueFROM"
+azureuser@bash:~$ cat mongo.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongo-deployment
+  labels:
+    app: mongo
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: mongo
+  template:
+    metadata:
+      labels:
+        app: mongo
+    spec:
+      containers:
+      - name: mongo
+        image: mongo
+        ports:
+        - containerPort: 27017
+        env:
+         - name: MONGO_INITDB_ROOT_USERNAME
+           valueFROM:
+            secretKeyRef:
+              name: mongodb-secret
+              key: mongo-root-username
+         - name: MONGO_INITDB_ROOT_PASSWORD
+           valueFROM:
+            secretKeyRef:
+              name: mongodb-secret
+              key: mongo-root-password
+
+azureuser@bash:~$ ^C
+azureuser@bash:~$ vi mongo.yaml
+azureuser@bash:~$ kubectl apply -f mongo.yaml
+deployment.apps/mongo-deployment created
+azureuser@bash:~$ kubectl get deployment
+NAME               READY   UP-TO-DATE   AVAILABLE   AGE
+mongo-deployment   0/2     2            0           30s
+azureuser@bash:~$ kubectl get pod
+NAME                                READY   STATUS                       RESTARTS   AGE
+mongo-deployment-598d9795b8-xj7mh   0/1     CreateContainerConfigError   0          70s
+mongo-deployment-598d9795b8-xkqnl   0/1     CreateContainerConfigError   0          70s
+azureuser@bash:~$ ^C
+azureuser@bash:~$ kubectl describe pod mongo-deployment-598d9795b8-xj7mh
+Name:             mongo-deployment-598d9795b8-xj7mh
+Namespace:        default
+Priority:         0
+Service Account:  default
+Node:             minikube/192.168.49.2
+Start Time:       Thu, 04 Sep 2025 10:47:03 +0000
+Labels:           app=mongo
+                  pod-template-hash=598d9795b8
+Annotations:      <none>
+Status:           Pending
+IP:               10.244.0.15
+IPs:
+  IP:           10.244.0.15
+Controlled By:  ReplicaSet/mongo-deployment-598d9795b8
+Containers:
+  mongo:
+    Container ID:
+    Image:          mongo
+    Image ID:
+    Port:           27017/TCP
+    Host Port:      0/TCP
+    State:          Waiting
+      Reason:       CreateContainerConfigError
+    Ready:          False
+    Restart Count:  0
+    Environment:
+      MONGO_INITDB_ROOT_USERNAME:  <set to the key 'mongo-root-username' in secret 'mongodb-secret'>  Optional: false
+      MONGO_INITDB_ROOT_PASSWORD:  <set to the key 'mongo-root-password' in secret 'mongodb-secret'>  Optional: false
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-62t49 (ro)
+Conditions:
+  Type                        Status
+  PodReadyToStartContainers   True
+  Initialized                 True
+  Ready                       False
+  ContainersReady             False
+  PodScheduled                True
+Volumes:
+  kube-api-access-62t49:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    Optional:                false
+    DownwardAPI:             true
+QoS Class:                   BestEffort
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type     Reason     Age               From               Message
+  ----     ------     ----              ----               -------
+  Normal   Scheduled  97s               default-scheduler  Successfully assigned default/mongo-deployment-598d9795b8-xj7mh to minikube
+  Normal   Pulled     94s               kubelet            Successfully pulled image "mongo" in 190ms (1.715s including waiting). Image size: 909230106 bytes.
+  Normal   Pulled     94s               kubelet            Successfully pulled image "mongo" in 191ms (400ms including waiting). Image size: 909230106 bytes.
+  Normal   Pulled     83s               kubelet            Successfully pulled image "mongo" in 187ms (187ms including waiting). Image size: 909230106 bytes.
+  Normal   Pulled     71s               kubelet            Successfully pulled image "mongo" in 176ms (176ms including waiting). Image size: 909230106 bytes.
+  Normal   Pulled     58s               kubelet            Successfully pulled image "mongo" in 227ms (227ms including waiting). Image size: 909230106 bytes.
+  Normal   Pulled     45s               kubelet            Successfully pulled image "mongo" in 199ms (199ms including waiting). Image size: 909230106 bytes.
+  Normal   Pulled     32s               kubelet            Successfully pulled image "mongo" in 169ms (169ms including waiting). Image size: 909230106 bytes.
+  Normal   Pulled     17s               kubelet            Successfully pulled image "mongo" in 174ms (174ms including waiting). Image size: 909230106 bytes.
+  Normal   Pulling    1s (x9 over 96s)  kubelet            Pulling image "mongo"
+  Warning  Failed     1s (x9 over 94s)  kubelet            Error: couldn't find key mongo-root-password in Secret default/mongodb-secret
+  Normal   Pulled     1s                kubelet            Successfully pulled image "mongo" in 192ms (192ms including waiting). Image size: 909230106 bytes.
+azureuser@bash:~$ vi mongo.yaml
+azureuser@bash:~$ kubectl apply -f mongo.yaml
+deployment.apps/mongo-deployment unchanged
+service/mongodb-service created
+azureuser@bash:~$ kubectl get service
+NAME              TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)     AGE
+kubernetes        ClusterIP   10.96.0.1      <none>        443/TCP     22h
+mongodb-service   ClusterIP   10.109.4.148   <none>        27017/TCP   48s
+azureuser@bash:~$ kubectl get all | grep mongodb
+service/mongodb-service   ClusterIP   10.109.4.148   <none>        27017/TCP   3m
+azureuser@bash:~$ kubectl get all | grep mongo
+pod/mongo-deployment-598d9795b8-xj7mh   0/1     CreateContainerConfigError   0          8m58s
+pod/mongo-deployment-598d9795b8-xkqnl   0/1     CreateContainerConfigError   0          8m58s
+service/mongodb-service   ClusterIP   10.109.4.148   <none>        27017/TCP   3m12s
+deployment.apps/mongo-deployment   0/2     2            0           8m58s
+replicaset.apps/mongo-deployment-598d9795b8   2         2         0       8m58s
+azureuser@bash:~$
+azureuser@bash:~$ kubectl apply -f mongoexpress.yaml
+deployment.apps/mongo-express unchanged
+azureuser@bash:~$ kubectl apply -f configmap.yaml
+configmap/mongodb-configmap unchanged
+azureuser@bash:~$ vi mongoexpress.yaml
+azureuser@bash:~$ kubectl apply -f mongoexpress.yaml
+deployment.apps/mongo-express unchanged
+The request is invalid: patch: Invalid value: "map[metadata:map[annotations:map[kubectl.kubernetes.io/last-applied-configuration:{\"apiVersion\":\"v1\",\"kind\":\"Service\",\"metadata\":{\"annotations\":{},\"name\":\"mongodb-service\",\"namespace\":\"default\"},\"spec\":{\"ports\":[{\"nodeport\":30000,\"port\":27017,\"protocol\":\"TCP\",\"targetPort\":27107}],\"selector\":{\"app\":\"mongo\"},\"type\":\"LoadBalancer\"}}\n]] spec:map[type:LoadBalancer]]": strict decoding error: unknown field "spec.ports[0].nodeport"
+azureuser@bash:~$ ^C
+azureuser@bash:~$ vi mongoexpress.yaml
+azureuser@bash:~$ kubectl apply -f mongoexpress.yaml
+deployment.apps/mongo-express unchanged
+service/mongodb-service configured
+azureuser@bash:~$ kubectl get service
+NAME              TYPE           CLUSTER-IP     EXTERNAL-IP   PORT(S)           AGE
+kubernetes        ClusterIP      10.96.0.1      <none>        443/TCP           23h
+mongodb-service   LoadBalancer   10.109.4.148   <pending>     27017:30000/TCP   85m
+azureuser@bash:~$ kubectl get service
+NAME              TYPE           CLUSTER-IP     EXTERNAL-IP   PORT(S)           AGE
+kubernetes        ClusterIP      10.96.0.1      <none>        443/TCP           23h
+mongodb-service   LoadBalancer   10.109.4.148   <pending>     27017:30000/TCP   86m
+azureuser@bash:~$ minikube service
+
+X Exiting due to MK_USAGE: You must specify service name(s) or --all
+
+azureuser@bash:~$ minikube service mongo-express-service
+
+X Exiting due to SVC_NOT_FOUND: Service 'mongo-express-service' was not found in 'default' namespace.
+You may select another namespace by using 'minikube service mongo-express-service -n <namespace>'. Or list out all the services using 'minikube service list'
+
+azureuser@bash:~$ minikube service mongo-express-service
+
+
